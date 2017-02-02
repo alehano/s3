@@ -17,6 +17,8 @@ type S3 struct {
 	// Bucket is the S3 bucket to use
 	Bucket string
 
+	Region string
+
 	// AccessKey is the S3 access key
 	AccessKey string
 

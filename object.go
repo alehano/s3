@@ -27,7 +27,8 @@ const (
 
 const (
 	s3proto = `https`
-	s3host  = `s3.amazonaws.com`
+	s3servicehost  = `s3`
+	s3awshost  = `amazonaws.com`
 )
 
 type Object interface {
@@ -169,7 +170,7 @@ func (o *object) FormURL(acl ACL, policy Policy, query ...url.Values) (*url.URL,
 		}
 	}
 
-	u, err := url.Parse(s3proto + `://` + o.s3.Bucket + `.` + s3host)
+	u, err := url.Parse(s3proto + `://` + o.s3.Bucket + `.` + o.hostWithRegion())
 	if err != nil {
 		return nil, err
 	}
@@ -203,7 +204,14 @@ func (o *object) resource(query string) string {
 }
 
 func (o *object) url(query string) string {
-	return s3proto + `://` + s3host + o.resource(query)
+	return s3proto + `://` + o.hostWithRegion() + o.resource(query)
+}
+
+func (o *object) hostWithRegion() string {
+	if o.s3.Region == "" {
+		return s3servicehost + `.` + s3awshost
+	}
+	return s3servicehost + `-` + o.s3.Region + `.` + s3awshost
 }
 
 func trim(s string) string {
